@@ -51,6 +51,7 @@ require_once('inc/close.php');
         </tbody>
 
     </table>
+    <a href="ajout_categorie.php">Ajouter une catégorie</a>
 </body>
 
 </html>
