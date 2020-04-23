@@ -5,8 +5,14 @@ if(isset($_GET['id']) && !empty($_GET['id'])){
     $id = $_GET['id'];
     //On se connecte a la base
 require_once('inc/connect.php');
-    // On écrit la requete avec la variable sql :id
-$sql ='SELECT * FROM `articles` WHERE `id`= :id;'; // ; SQL et ; PHP
+    // On écrit la requete sql
+$sql = 'SELECT `articles`.*, GROUP_CONCAT(`categories`.`name`) 
+AS category_name FROM `articles` 
+LEFT JOIN `articles_categories` ON `articles`.`id` = `articles_categories`.`articles_id` 
+LEFT JOIN `categories` ON `articles_categories`.`categories_id` = `categories`.`id` 
+WHERE `articles`.`id`= :id 
+GROUP BY `articles`.`id` 
+ORDER BY `created_at` ;';
 //rEQUETE avec VARIABLE donc utilisation de la requete dite "préparerée"
 $query = $db->prepare($sql);
 
@@ -44,7 +50,17 @@ if(!$article){ //($article == false)
 <body>
     <article>
         <h1><?= $article['title'] ?> </h1>
-        <p>Publié le <?= date('d/m/Y à H:i:s', strtotime($article['created_at']))?></p>
+        <p>Publié le <?= date('d/m/Y à H:i:s', strtotime($article['created_at']))?>
+        Dans 
+            <?php
+            //Si je recois "sport,actu"
+             $categories = explode(',', $article['category_name']);
+             //Apres explode j'ai [0 =>  'sports', 1 => 'actualités']
+             foreach($categories as $categorie){
+                 echo'<a href="#">' . $categorie . '</a> ';
+             }
+              ?>
+              </p></p>
         <div><?= $article['content'] ?></div>
         <a href="<?= $_SERVER['HTTP_REFERER'] ?>">Retour</a>
     </article>
