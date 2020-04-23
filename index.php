@@ -13,7 +13,7 @@ ON `articles`.`id` = `articles_categories`.`articles_id`
 LEFT JOIN `categories`
 ON `articles_categories`.`categories_id` = `categories`.`id`
 GROUP BY `articles`.`id`
-ORDER BY `created_at`;';
+ORDER BY `created_at` DESC;';
 //rEQUETE SANS VARIABLE donc utilisation de la méthode QUERY
 $query = $db->query($sql);
 
@@ -49,9 +49,10 @@ require_once('inc/close.php');
               ?>
               </p>
         <div><?= substr(strip_tags($article['content']), 0, 300) . '...' ?></div>
+        
         </article>
     <?php endforeach; ?>
-
+    <button>Ajouter un article </button>
 
 </body>
 

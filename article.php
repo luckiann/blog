@@ -12,7 +12,7 @@ LEFT JOIN `articles_categories` ON `articles`.`id` = `articles_categories`.`arti
 LEFT JOIN `categories` ON `articles_categories`.`categories_id` = `categories`.`id` 
 WHERE `articles`.`id`= :id 
 GROUP BY `articles`.`id` 
-ORDER BY `created_at` ;';
+ORDER BY `created_at`;';
 //rEQUETE avec VARIABLE donc utilisation de la requete dite "préparerée"
 $query = $db->prepare($sql);
 
