@@ -21,8 +21,52 @@ if (isset($_POST) && !empty($_POST)) {
         $titre = strip_tags($_POST['titre']);
         $contenu = strip_tags($_POST['contenu'], '<div><p><h1><h2><img><strong>');
 
+//On vérifie si on a une image
+    if(isset($_FILES['image']) && !empty($_FILES['image']) && $_FILES['image']
+    ['error'] != 4){
+        //On récupère les données
+        $image = $_FILES['image'];
+
+        //On vérifie que le ttransfert s'est mal passé 'error'=0
+        if($image['error'] != 0){
+
+            echo 'Une erreur s\'est produite, devinez laquelle. 0x6845328486';
+            die;
+        }
+
+        //On limite les images aux png et jpg (jpeg aussi)
+        $types =['image/png', 'image/jpeg'];
+
+       //On vérifie si le type du fichier est absent de la liste
+        if(!in_array($image['type'], $types)){
+            echo "Le type de fichier doit être une image jpg ou png";
+            die;
+        }
+        //Le transfert s'est bien déroulé on déplace l'image temporaire après lui avoir généré un nouveau nom 
+        //Générer un nom pour le fichier -> nom + extension
+        $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
+        // On génère un nom "aléatoire"
+        $nom = md5(uniqid()) .'.' . $extension;
+        
+        //On génère le nom complet vers le dossier de destination
+        $nomComplet = __DIR__ . '/uploads/' . $nom;
+         //On déplace le fichier 
+         if(!move_uploaded_file($image['tmp_name'], $nomComplet)){
+            echo "Le fichier n'a pas été copié! ";
+            die;
+        }
+   
+thumb(300, $nom);
+thumb(150, $nom);
+thumb(400, $nom);
+resizeImage($nom, 75);
+        //Thumb = thumbnail (timbrre poste)
+// Prendre reg.jpg
+// Générer une miniature carré de 200*200
+// Son nom devra être reg-200x200.jpg
+}
         //On écrit la requête 
-        $sql = 'INSERT INTO `articles`(`title`,`content`, `users_id` ) VALUES (:titre, :contenu, :userid);';
+        $sql = 'INSERT INTO `articles`(`title`,`content`, `featured_image`, `users_id` ) VALUES (:titre, :contenu, :image, :userid);';
 
         //On prépare la requête
         $query = $db->prepare($sql);
@@ -30,6 +74,7 @@ if (isset($_POST) && !empty($_POST)) {
         $query->bindValue(':titre', $titre, PDO::PARAM_STR);
         $query->bindValue(':contenu', $contenu, PDO::PARAM_STR);
         $query->bindValue(':userid', 1, PDO::PARAM_INT);
+        $query->bindValue(':image', $nom, PDO::PARAM_STR);
 
         //on exécute la requete
 
@@ -59,7 +104,6 @@ if (isset($_POST) && !empty($_POST)) {
         echo "Le fomulaire doit etre rempli complètement";
     }
 }
-
 // header('Location: index.php');
 
 ?>
@@ -76,7 +120,7 @@ if (isset($_POST) && !empty($_POST)) {
 
 <body>
     <h1>Ajouter un article</h1>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div>
             <label for="titre">Ajouter un titre : </label>
             <input type="text" id="titre" name="titre">
@@ -85,6 +129,15 @@ if (isset($_POST) && !empty($_POST)) {
             <label for="contenu">Ajouter du contenu : </label>
             <textarea name="contenu" id="contenu"></textarea>
         </div>
+
+        <h2>Image</h2>
+
+    <div>
+        <label for="image">Fichier : </label>
+         <input type="file" name="image" id="image">       <!--//Un seul fichier / plusieur ajouter -> multiple <- apres id="ficher" -->
+    </div>
+    
+    
 
         <h2>Catégories</h2>
         <?php foreach ($categories as $categorie) :   ?>
@@ -95,6 +148,7 @@ if (isset($_POST) && !empty($_POST)) {
 
         <?php endforeach; ?>
         <button>Ajouter l'article</button>
+    </form>
 </body>
 
 </html>
