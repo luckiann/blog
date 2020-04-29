@@ -101,6 +101,7 @@ if(isset($_POST) && !empty($_POST)){
             <input type="checkbox" id="remember" name="remember">
         </div>
         <button>Me connecter</button>
+        <a href="oubli_pass.php">Mot de Passe Oublié</a>
     </form>
 </body>
 </html>

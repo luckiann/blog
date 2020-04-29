@@ -25,6 +25,12 @@ require_once('inc/close.php');
 <body>
     <?php include_once('inc/header.php'); ?>
     <h1>Liste des articles</h1>
+    <?php 
+    if(isset($_SESSION['error']) && !empty($_SESSION['error'])){
+        echo $_SESSION['error'];
+        unset($_SESSION['error']);
+    }
+    ?>
     <?php foreach($articles as $article): ?>
         <article>
             <h2><a href="article.php?id=<?= $article['id'] ?>"><?= $article['title'] ?></a></h2>
