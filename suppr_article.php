@@ -1,4 +1,5 @@
 <?php
+session_start();
 //Ce fichier sert a suppr une catégorie
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
@@ -54,7 +55,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     //On exécute la requete
     $query->execute();
     require_once('inc/close.php');
-
+$_SESSION['message'] = "L'article numéro $id a été supprimé";
+header('Location: admin_articles.php');
 } else {
     //pas d'id 
     //oN REDIRIGE LE VISITEUR

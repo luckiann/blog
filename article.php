@@ -1,42 +1,41 @@
 <?php
-//On vérifie si on a un title dans l'url
+session_start();
+// Cette page affiche 1 article
+
+// On vérifie si on a un id dans l'url et si il n'est pas vide
 if(isset($_GET['id']) && !empty($_GET['id'])){
-    //Si on a un id et qu'il est pas vide on continue
+    // On a un id, on le récupère
     $id = $_GET['id'];
-    //On se connecte a la base
-require_once('inc/connect.php');
-    // On écrit la requete sql
-$sql = 'SELECT `articles`.*, GROUP_CONCAT(`categories`.`name`) 
-AS category_name FROM `articles` 
-LEFT JOIN `articles_categories` ON `articles`.`id` = `articles_categories`.`articles_id` 
-LEFT JOIN `categories` ON `articles_categories`.`categories_id` = `categories`.`id` 
-WHERE `articles`.`id`= :id 
-GROUP BY `articles`.`id` 
-ORDER BY `created_at`;';
-//rEQUETE avec VARIABLE donc utilisation de la requete dite "préparerée"
-$query = $db->prepare($sql);
 
-//On injecte les valeurs dans la requete
-$query->bindValue(':id', $id, PDO::PARAM_INT);
+    // On se connecte à la base de données
+    require_once('inc/connect.php');
 
-//On exécute la requete
-$query->execute();
+    // On écrit la requête
+    $sql = 'SELECT `articles`.*, GROUP_CONCAT(`categories`.`name`) as category_name FROM `articles` LEFT JOIN `articles_categories` ON `articles`.`id` = `articles_categories`.`articles_id` LEFT JOIN `categories` ON `articles_categories`.`categories_id` = `categories`.`id` WHERE `articles`.`id` = :id GROUP BY `articles`.`id` ;';
 
-// On récupère les données d'1 utilisateur
-$article = $query->fetch(PDO::FETCH_ASSOC);
+    // On prépare la requête
+    $query = $db->prepare($sql);
 
-require_once('inc/close.php');
+    // On injecte les variables
+    $query->bindValue(':id', $id, PDO::PARAM_INT);
 
-//Sil'article n'existe pas
-if(!$article){ //($article == false)
-    echo "l'article n'existe pas";
-    die;
+    // On exécute la requête
+    $query->execute();
 
-}
+    // On récupère les données (1 seul article)
+    $article = $query->fetch(PDO::FETCH_ASSOC);
 
+    // On se déconnecte
+    require_once('inc/close.php');
+
+    // Si l'article n'existe pas
+    if(!$article){ // ($article == false)
+        echo "L'article n'existe pas";
+        die;
+    }
 
 }else{
-    // si on n'a pas d'id on revient index.php
+    // On n'a pas d'id donc on redirige vers index.php
     header('Location: index.php');
 }
 ?>
@@ -48,21 +47,25 @@ if(!$article){ //($article == false)
     <title><?= $article['title'] ?></title>
 </head>
 <body>
+    <?php include_once('inc/header.php'); ?>
     <article>
-        <h1><?= $article['title'] ?> </h1>
-        <p>Publié le <?= date('d/m/Y à H:i:s', strtotime($article['created_at']))?>
-        Dans 
-            <?php
-            //Si je recois "sport,actu"
-             $categories = explode(',', $article['category_name']);
-             //Apres explode j'ai [0 =>  'sports', 1 => 'actualités']
-             foreach($categories as $categorie){
-                 echo'<a href="#">' . $categorie . '</a> ';
-             }
-              ?>
-              </p></p>
+        <h1><?= $article['title'] ?></h1>
+        <p>
+            Publié le <?= date('d/m/Y à H:i:s', strtotime($article['created_at'])) ?>
+            dans 
+                <?php
+                    
+                    // si je reçois "Sports,Actualités"
+                    $categories = explode(',', $article['category_name']);
+                    // Après explode j'ai [0 => 'Sports', 1 => 'Actualités']
+                    foreach($categories as $categorie){
+                        echo '<a href="#">' . $categorie . '</a> ';
+                    }
+                ?>
+    
+        </p>
         <div><?= $article['content'] ?></div>
-        <a href="<?= $_SERVER['HTTP_REFERER'] ?>">Retour</a>
     </article>
+    <a href="<?= $_SERVER['HTTP_REFERER'] ?>">Retour</a>
 </body>
 </html>

@@ -1,0 +1,14 @@
+remember token
+champ de la base de donée varchar 255 qui peut etre null
+
+a la connection 
+si la case est cochée:
+on génère un tokenon stocke le token dans un cookie variable 1an
+on stocje le token dans la base
+
+
+Au retour apres fermeture du navigateur
+si un cookie remember existe
+:
+on cherche si un utilisateur a le token correspondant
+Si oui, on restaure la session avec les donnéers de ces utilisateurs

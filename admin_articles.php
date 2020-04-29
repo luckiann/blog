@@ -27,6 +27,12 @@ require_once 'inc/close.php';
         $_SESSION['message'] = '';
         endif;
     ?>
+     <?php if(verifForm($_SESSION, ['error'])): ?>
+        <div style="color:green; font-weight: bold"><?= $_SESSION['error'] ?></div>
+    <?php 
+        $_SESSION['error'] = '';
+        endif;
+        ?>
     <h1>Liste des articles</h1>
     <table>
         <thead>
