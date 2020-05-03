@@ -33,6 +33,22 @@ require_once('inc/close.php');
     ?>
     <?php foreach($articles as $article): ?>
         <article>
+            <?php
+            //On vérifie si l'article a une image
+            if($article['featured_image'] != null):
+                //On a une image on la traite et on l'affiche
+                //On sépare le nom et l'extension
+                $nom = pathinfo($article['featured_image'], PATHINFO_FILENAME);
+                $extension = pathinfo($article['featured_image'], PATHINFO_EXTENSION);
+
+                //on crée le nom de l'image a afficher
+                $image = $nom . '-150x150.' . $extension;
+                ?>
+                <img src="uploads/<?= $image ?>" alt="<?= $article['title'] ?>">
+
+                <?php
+            endif;
+            ?>
             <h2><a href="article.php?id=<?= $article['id'] ?>"><?= $article['title'] ?></a></h2>
             <p>
                 Publié le <?= date('d/m/Y à H:i:s', strtotime($article['created_at'])) ?>
@@ -48,6 +64,7 @@ require_once('inc/close.php');
                 ?>
             </p>
             <div><?= substr(strip_tags($article['content']), 0, 300) . '...' ?></div>
+            
         </article>
     <?php endforeach; ?>
     <?php

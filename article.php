@@ -64,6 +64,22 @@ if(isset($_GET['id']) && !empty($_GET['id'])){
                 ?>
     
         </p>
+        <?php
+            //On vérifie si l'article a une image
+            if($article['featured_image'] != null):
+                //On a une image on la traite et on l'affiche
+                //On sépare le nom et l'extension
+                $nom = pathinfo($article['featured_image'], PATHINFO_FILENAME);
+                $extension = pathinfo($article['featured_image'], PATHINFO_EXTENSION);
+
+                //on crée le nom de l'image a afficher
+                $image = $nom . '-75.' . $extension;
+                ?>
+                <img src="uploads/<?= $image ?>" alt="<?= $article['title'] ?>">
+
+                <?php
+            endif;
+            ?>
         <div><?= $article['content'] ?></div>
     </article>
     <a href="<?= $_SERVER['HTTP_REFERER'] ?>">Retour</a>

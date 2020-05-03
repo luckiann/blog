@@ -1,6 +1,32 @@
 <?php
 session_start();
 require_once 'inc/lib.php';
+//On vérifie qu'on a une session user
+if(verifForm($_SESSION, ['user'])){
+//On vérifie si il est admin
+//On transforme les roles en tableau php
+$roles = json_decode($_SESSION['user']['roles']);
+//vérifier si role contient "role_admin"
+if(!in_array('ROLE_ADMIN', $roles)){
+    //L'utilisayeur n'est pas admin
+    //Page 404
+    //On envoie un code réponse 404
+    http_response_code(404);
+    include('errors/404.php');
+    exit;
+}
+
+
+}else{
+    //L'utilisateur n'est pas connecté
+    //On affiche une erreur 403
+    http_response_code(403);
+    include('errors/403.php');
+    exit;
+    
+
+}
+//FIN VERIFICATION PERMISSIONS DACCES
 require_once 'inc/connect.php';
 $sql = 'SELECT * FROM articles ORDER BY created_at ASC';
 

@@ -48,8 +48,10 @@ if(isset($_POST) && !empty($_POST)){
                 $_SESSION['user'] = [
                     'id'    => $user['id'],
                     'email' => $user['email'],
-                    'name'  => $user['name']
+                    'name'  => $user['name'],
+                    'roles' => $user['roles']
                 ];
+               
                 //On vérifie si la case est cochée
                 if(isset($_POST['remember']) && $_POST['remember'] == 'on'){
                     //La case est cochée
